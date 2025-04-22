@@ -1,0 +1,16 @@
+프로젝트에 대한 정보
+
+스쿱 (scoop) 은 숨겨진 모임을 발굴한다는 의미를 가지고 있습니다.
+개발 기간 : 2025-04-02 ~ 2025-04-17
+
+팀 소개 : 저의 템에는 저 비노드 , 김지은 그리고 이수호 3 명 있었습니다.
+
+프로젝트 정보 : scoop 은 같은 취미 있는 사람들이 함께 모여서 출길수 있는 동호회 플랫폼 입니다. 다향한 카태고리로 분리되어있고 좋아하는 동호회 참여해서 출길수 있습니다.
+
+배포 주소 : https://meetscoop.shop
+
+기술 스택 
+1. 컴유니케이션 : github, notion
+2. API : kakao oauth 2.0, kakao map, location api
+3. frontend : html, css, javascript
+4. backend : 
