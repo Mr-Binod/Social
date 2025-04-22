@@ -27,6 +27,7 @@ app.use(mypageRouter)
 
 // app.get('/' , (req, res) => {
 //     res.render('main/main')
+//     res.render('main/main')
 // })
 
 app.listen(3000,() => {
