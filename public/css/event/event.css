@@ -1,0 +1,214 @@
+
+#Managemember {
+    width: 1000px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin: 30px auto;
+    padding: 70px 40px;
+}
+
+#form-header{
+    margin-bottom: 30px;
+    border-bottom: 1px solid rgb(215, 214, 214);
+    padding-bottom: 15px;
+}
+
+h2 {
+    margin-bottom: 10px;
+}
+.Memberlist {
+    width: 400px;
+    margin: 0 auto;
+    font-size: 18px;
+}
+
+ol > li {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    height: 60px;
+    width: 400px;
+    padding: 10px 10px;
+    box-sizing: border-box;
+    border-radius: 10px;
+}
+body {
+    position: relative;
+}
+ol button {
+    float: right;
+    width: 56px;
+    height: 40px;
+    background-color: #ffb300;
+    border: none;
+    border-radius: 5px;
+}
+ol button {
+    cursor: pointer;
+}
+
+ol li span {
+    display: inline-block;
+    width: 100px;
+    height: 40px;
+    margin-top: 10px ;
+}
+
+ol button:hover {
+    background-color: #ff8800;
+    color: rgb(238, 238, 238);
+}
+
+#Memberverify {
+    width: 1000px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin: 0 auto;
+    padding: 70px 40px;
+}
+
+#club_image2 {
+    display: none;
+}
+#club_image3 {
+    display: none;
+}
+
+
+#eventlocations {
+    margin-bottom: 25px;
+}
+
+#eventlocations label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #333;;
+}
+
+#eventlocations input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    font-size: 1em;
+}
+
+.tag1{
+    display: flex;
+    background-color:#f5f5f5;
+    margin: 3px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    align-items: center;
+    font-size: 0.9em;
+}
+
+.tag-remove {
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+#Popupwrap, #Popupwrap_empty, #Popupwraperror, #Popupwraperrordate {
+    display: none;
+}
+
+#Popupwrap.popup, #Popupwrap_empty.popup, #Popupwraperror.popup, #Popupwraperrordate.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+.Popup, .Popup_empty, .Popuperror, .Popuperrordate {
+    position: relative;
+    width: 400px;
+    padding: 40px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    animation: popUp 0.3s ease;
+    text-align: center;
+}
+
+.Popup span, .Popup_empty span, .Popuperror span, .Popuperrordate span {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 25px;
+    display: block;
+    line-height: 1.5;
+}
+
+.Popup button, .Popup_empty button, .Popuperror button, .Popuperrordate button {
+    width: 120px;
+    height: 45px;
+    cursor: pointer;
+    border: none;
+    background-color: #ff7a00;
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(255, 122, 0, 0.3);
+}
+
+.Popup button:hover, .Popup_empty button:hover, .Popuperror button:hover, .Popuperrordate button:hover {
+    background-color: #e56c00;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(255, 122, 0, 0.4);
+}
+
+.Popup a, .Popup_empty a, .Popuperror a, .Popuperrordate a {
+    text-decoration: none;
+    display: inline-block;
+}
+
+.Popup span::before {
+    content: '✓';
+    display: block;
+    font-size: 48px;
+    color: #ff7a00;
+    margin-bottom: 15px;
+}
+
+.Popuperror span::before, .Popuperrordate span::before, .Popup_empty span::before {
+    content: '!';
+    display: block;
+    font-size: 48px;
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    border-radius: 50%;
+    background-color: #ff7a00;
+    color: white;
+    margin: 0 auto 15px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes popUp {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}

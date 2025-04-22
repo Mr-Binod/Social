@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>동호회 상세페이지</title>
+    <link rel="stylesheet" href="/public/css/club/detail_club.css">
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/ko.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <%- include("../common/header" , {data}) %>
+    <%- include("../common/side_bar") %>
+    <div id="Popupwrap">
+        <div class="Popup">           
+            <span>로그인이 필요합니다</span>
+            <a href="/login"><button>확인</button> </a>
+        </div>
+    </div>
+    <div class="page-container">
+        <div class="main-content">
+            <div class="club-detail-container">
+                <div class="club-header">
+                    <div class="club-image-container">
+                        <img src="<%= club.image %>" alt="동호회 이미지" class="club-image">
+                    </div>
+                    <div class="club-info">
+                        <div class="club-title-section">
+                            <h2 class="club-name"><%= club.name %></h2>
+                            <button class="btn-heart" aria-label="찜하기">
+                                <button class="btn_like <%= liked ? 'on' : '' %>" data-clubid="<%= club.club_id %>"></button>
+                            </button>
+                        </div>
+                        <div class="club-category">
+                            <span class="main-category">
+                            <%= club.Category && club.Category.Parent ? club.Category.Parent.name : '카테고리 없음' %>
+                        </span>
+                        <span style="font-size: 1.2em;">›</span>
+                        <span class="sub-category">
+                            <%= club.Category ? club.Category.name : '' %>
+                        </span>
+                        </div>
+                        
+                        <div class="club-tags">
+                            <% club.Tags.forEach(tag => { %>
+                            <span class="tag"><%= tag.tag %></span>
+                        <% }) %>
+                        </div>
+                        
+                        <div class="club-members-count">
+                            <span class="current"><%= club.Members.length %></span> /
+                            <span class="max"><%= club.member_limit %></span>명
+                        </div>
+                        <p class="club-description"><%= club.introduction %></p>
+                        <div class="club-top-actions">
+                            <% if (!isMember) { %>
+                                <button type="button" id = "join_btn"  data-clubid="<%= club.club_id %>" class = "btn btn-join">가입 신청</button>
+                            <% } %>
+                            <% if (String(loginUserId) === String(club.creator_id)) { %>
+                                <div class="club-manage-actions">
+                                    
+                                    <button type = "button" id = "edit_club" class="btn btn-manage">🛠️</button>
+                                    <button type="button"  id = "add_events"class="btn btn-event-add">➕</button>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="club-tabs">
+                    <button class="tab-btn active" data-tab="schedule">일정</button>
+                    <button class="tab-btn" data-tab="members">멤버</button>
+                    <button class="tab-btn" data-tab="reviews">리뷰</button>
+                </div>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="schedule">
+                        <div class="schedule-header">
+                            <h3>동호회 일정 달력</h3>
+                        </div>
+                        
+                        <div id="calendar"></div>
+                        <div class="schedule-detail" id="schedule-detail-modal" style="display: none;">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h3 class="modal-title"></h3>
+                                    <span class="close-modal">&times;</span>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="event-info">
+                                    </div>
+                                    <div class="participation-poll">
+                                        <h4>참여 여부</h4>
+                                    
+                                        <div class="poll-options-area"></div>
+                                    
+                                        <div class="participants">
+                                            <div class="participant-group">
+                                                <h5>참석 (0명)</h5>
+                                                <div class="participant-list attending"></div>
+                                            </div>
+                                            
+                                            <div class="participant-group">
+                                                <h5>불참 (0명)</h5>
+                                                <div class="participant-list not-attending"></div>
+                                            </div>
+                                            
+                                            <div class="participant-group">
+                                                <h5>미정 (0명)</h5>
+                                                <div class="participant-list maybe-attending"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                                            </div>
+                    <div class="tab-pane" id="members">
+                        <div class="members-header">
+                            <h3>동호회 멤버</h3>
+                        </div>
+                        <div class="members-list">
+                            <div class="member-group">
+                                <h4>운영진</h4>
+                                <div class="member-cards admin-members">
+                                </div>
+                            </div>
+                            <div class="member-group">
+                                <h4>멤버</h4>
+                                <div class="member-cards regular-members">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="reviews">
+                        <div class="reviews-header">
+                            <h3>동호회 리뷰</h3>
+                            <div class="reviews-actions">
+                                <button class="btn btn-write-review">리뷰 작성</button>
+                            </div>
+                        </div>
+                        <div class="review-stats">
+                            <div class="rating-average">
+                                <div class="average-score">4.8</div>
+                                <div class="stars">★★★★★</div>
+                                <div class="review-count">총 15개 리뷰</div>
+                            </div>
+                            <div class="rating-bars">
+                                <div class="rating-bar">
+                                    <span class="rating-label">5점</span>
+                                    <div class="bar-container">
+                                        <div class="bar" style="width: 85%;"></div>
+                                    </div>
+                                    <span class="rating-count">12</span>
+                                </div>
+                                <div class="rating-bar">
+                                    <span class="rating-label">4점</span>
+                                    <div class="bar-container">
+                                        <div class="bar" style="width: 12%;"></div>
+                                    </div>
+                                    <span class="rating-count">2</span>
+                                </div>
+                                <div class="rating-bar">
+                                    <span class="rating-label">3점</span>
+                                    <div class="bar-container">
+                                        <div class="bar" style="width: 6%;"></div>
+                                    </div>
+                                    <span class="rating-count">1</span>
+                                </div>
+                                <div class="rating-bar">
+                                    <span class="rating-label">2점</span>
+                                    <div class="bar-container">
+                                        <div class="bar" style="width: 0%;"></div>
+                                    </div>
+                                    <span class="rating-count">0</span>
+                                </div>
+                                <div class="rating-bar">
+                                    <span class="rating-label">1점</span>
+                                    <div class="bar-container">
+                                        <div class="bar" style="width: 0%;"></div>
+                                    </div>
+                                    <span class="rating-count">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="review-form" style="display: none;">
+                            <h4>리뷰 작성</h4>
+                            <div class="rating-input">
+                                <span>평점:</span>
+                                <div class="star-rating">
+                                    <input type="radio" id="star5" name="rating" value="5">
+                                    <label for="star5">★</label>
+                                    <input type="radio" id="star4" name="rating" value="4">
+                                    <label for="star4">★</label>
+                                    <input type="radio" id="star3" name="rating" value="3">
+                                    <label for="star3">★</label>
+                                    <input type="radio" id="star2" name="rating" value="2">
+                                    <label for="star2">★</label>
+                                    <input type="radio" id="star1" name="rating" value="1">
+                                    <label for="star1">★</label>
+                                </div>
+                            </div>
+                            <textarea class="review-textarea" placeholder="동호회 활동에 대한 솔직한 리뷰를 작성해주세요. (최소 20자 이상)"></textarea>
+                            <div class="review-form-actions">
+                                <button class="btn btn-cancel-review">취소</button>
+                                <button class="btn btn-submit-review">리뷰 등록</button>
+                            </div>
+                        </div>
+                        <div class="reviews-list">
+                        </div>
+                    </div>
+                        <div class="verification-form" style="display: none;">
+                            <h4>참여 인증 등록</h4>
+                            <div class="verification-event-select">
+                                <label>인증할 모임 선택</label>
+                                <select class="event-select">
+                                    <option value="">모임을 선택하세요</option>
+                                    <option value="1">2025-04-13 정기 축구 모임</option>
+                                    <option value="2">2025-04-20 번개 모임</option>
+                                    <option value="3">2025-04-27 월례 회식</option>
+                                </select>
+                            </div>
+                            
+                            <div class="verification-upload-container">
+                                <div class="verification-upload-box">
+                                    <div class="upload-icon">📷</div>
+                                    <p class="upload-info">클릭하여 인증 사진을 업로드하세요</p>
+                                    <input type="file" id="verification-image" accept="image/*" style="display: none;">
+                                </div>
+                                <div class="verification-preview" style="display: none;">
+                                    <img src="" alt="미리보기" id="verification-preview-img">
+                                    <button class="btn-remove-preview">×</button>
+                                </div>
+                            </div>
+                            
+                            <div class="verification-form-actions">
+                                <button class="btn btn-cancel-verification">취소</button>
+                                <button class="btn btn-submit-verification">등록</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const eventList = <%- JSON.stringify(club.Events || []) %>;
+        console.log(eventList);
+        const userId = "<%= loginUserId %>"; 
+        const isMember = <%= isMember %>; 
+        const clubId = "<%= club.club_id %>";  
+        console.log(isMember)
+        window.reviews = <%- JSON.stringify(club.Reviews || []) %>;
+
+        const members = <%- JSON.stringify(club.Members || []) %>;
+        const ownerId = "<%= club.creator_id %>";
+
+        const adminContainer = document.querySelector(".admin-members");
+        const regularContainer = document.querySelector(".regular-members");
+        const memberCountLabel = document.querySelector(".member-group h4");
+        let regularCount = 0; 
+
+        members.forEach(member => {
+            const isOwner = member.user_id_fk === ownerId;
+            const name = member.User?.kakao_name || "이름없음";
+            const img = member.User?.kakao_profile_image || "https://via.placeholder.com/100";
+            const joinDate = new Date(member.createdAt).toLocaleDateString('ko-KR').replaceAll('. ', '.').replace('.', '');
+
+            const card = `
+                <div class="member-card">
+                    <div class="member-avatar">
+                        <img src="${img}" alt="프로필 이미지">
+                    </div>
+                    <div class="member-info">
+                        <h5 class="member-name">${name}</h5>
+                        <span class="member-join-date">${joinDate} 가입</span>
+                    </div>
+                </div>
+            `;
+
+            if (isOwner) {
+                adminContainer.insertAdjacentHTML("beforeend", card);
+            } else {
+                regularContainer.insertAdjacentHTML("beforeend", card);
+            }
+        });
+        
+        document.addEventListener("DOMContentLoaded", () => {
+            const addBtn = document.getElementById("add_events");
+            const editBtn = document.getElementById("edit_club");
+
+            if (addBtn) {
+                addBtn.addEventListener("click", () => {
+                    console.log("이벤트 추가 버튼 눌렸어");
+                    location.href = `/clubs/detail/${clubId}/events`; 
+                });
+            }
+
+            if (editBtn) {
+                editBtn.addEventListener("click", () => {
+                    console.log("수정 버튼 눌렸어");
+                    location.href = `/clubs/detail/${clubId}/manage`;
+                });
+            }
+    });
+
+    </script>
+    
+    <script src = "/public/script/club/detail_club.js"></script>
+</body>
+</html>

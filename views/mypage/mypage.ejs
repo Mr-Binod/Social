@@ -1,0 +1,153 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <link rel="stylesheet" href="/public/css/common/header.css">
+    <link rel="stylesheet" href="/public/css/mypage/mypage.css">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar/index.global.min.js'></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard/dist/web/static/pretendard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+
+
+</head>
+<body>
+    <%- include("../common/header", {data}) %>
+    <div id="Bodywrap">
+        <div id="Bodycontent">
+            <h1><%= data.nickname %>님 환영합니다!</h1>
+            <span class="line"></span>
+            <div id="Userinfo">
+                <img src="<%= data.profile_image %>" alt="">
+                <ul id="Userul">
+                    <div id="Edit">
+                        <a href="/Edituser" id="Edituser">정보 수정</a>
+                    </div>
+                    <div class="userulbody">
+                        <li>
+                            <span>이름 : <%= data.nickname %></span>                      
+                        </li>
+                        <li>
+                            <span>나이 : <%= Userdata.age %> </span>
+                        </li>
+                        <li>
+                            <span>성별 : <%= Userdata.gender %></span>
+                        </li>
+                        <li>
+                            <!-- <span>아이디 : <%= uuid %></span> -->
+                            <span>현재 포인트 : <%= Userlevel %></span>
+                        </li>
+                    </div>
+                  
+                </ul>
+            </div>
+            <div class="addclubdiv">
+                <i class="fa-regular fa-heart beating-heart" id="heartIcon" onclick="toggleLike()" style="color: #e63946; font-size: 2rem;"></i>
+                <% if(Userlevel >= 300) { %>
+                    <a href="/clubs/create" class="addclub" style="color: rgb(255, 255, 255);">동호회 추가하기</a>
+                <% } %>
+            </div>
+            <span class="line"></span>
+
+            <div id="Introduction">
+                    <span>소개글 : </span>
+                <p>
+                    <%= Userdata.introduction %>
+                </p>
+            </div>
+            <span class="line"></span>
+            <div id="contenttype">
+                <button class="Active" id="myclub">나의 동호회</button>
+                <button id="myactivities">나의 활동</button>
+                <button id="mycalendar">나의 달력</button>
+            </div>
+            <span class="line"></span>
+            <div id="calendardiv">
+
+                <div id='calendar'></div> 
+            </div>
+     
+            <% if(clubdata) { %> 
+                <% for(let i = 0; i < clubdata.length; i++) { %> 
+                    <ul class="Contentul Active">
+                        <li class="Contentli"> 
+                            <div class="imagediv">
+                                
+                                <a href="/clubs/detail/<%= clubdata[i].club_id %>" class="imagetag"><img src="<%= clubdata[i].image %>" alt=""></a>
+                            </div>
+                            <ul class="">
+                                <li><%= clubdata[i].name %> </li>
+                                <li> 
+                                    <%= clubdata[i].introduction %>
+                                </li>
+                             
+                                <li class="clubinfo">
+                                    <span><%= clubdata[i].club_category_name %></span>
+                                    <span>멤버 정원 : <%= clubdata[i].member_limit %></span>
+                                </li>
+                            </ul>
+                            
+                        </li>
+                    </ul>
+                <% } %>
+            <% } %>
+            <% if(clubdata1) { %> 
+                <% for(let i = 0; i < clubdata1.length; i++) { %> 
+                    <ul class="Contentul1">
+                        <li class="Contentli"> 
+                            <div class="imagediv1">
+                                <a href="/clubs/detail/<%= clubdata[i].club_id %>" class="imagetag"><img src="<%= clubdata1[i].image %>" alt=""></a>
+                            </div>
+                            <ul class="">
+                                <li>동호회 이름 :  <%= clubdata1[i].name %> </li>
+                                <li>내용 : 
+                                    <%= clubdata1[i].introduction %>
+                                </li>
+                              
+                                <li class="clubinfo">
+                                    <span><%= clubdata1[i].club_category_name %></span>
+                                    <span>멤버 정원 : <%= clubdata1[i].member_limit %></span>
+                                </li>
+                            </ul>
+                            
+                        </li>
+                    </ul>
+                <% } %>
+            <% } %>                  
+    
+        </div>
+        <div id="participantwrap">
+            <div class="participantbody">
+                <div class="participantdiv">
+
+                    <% for(let i = 0; i < participantdate.length; i++) { %> 
+                        <ul>
+                            <h3>이벤트 잠여 정보</h3><br>
+                            <li><strong>이벤트 이름 : </strong> <%= participanttitle[i].title %></li>
+                            <li><strong>잠여 아이디 : </strong> <%= participantdate[i].participant_id %></li>
+                            <li><strong>참가자 유형 : </strong> <%= participantdate[i].state %></li>
+                            <li><strong>잠여 날짜 : </strong>잠여 날짜 : <%= new Date(participantdate[i].createdAt).toISOString().slice(0, 10) %></li>
+                        </ul>
+                        <% } %>
+                    </div>
+                <button id="Participantbtn">확인</button>
+            </div>
+        </div>
+        
+    </div>
+</body>
+<script>
+    window.mypageData = <%- JSON.stringify(participantdate) %>;
+    window.mypageData1 = <%- JSON.stringify(participanttitle) %>;
+</script>
+<script src="/public/script/mypage/mypage.js"></script>
+</html>

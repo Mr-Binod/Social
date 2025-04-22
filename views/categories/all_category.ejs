@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <link rel="stylesheet" href="/public/css/categories/all_category.css">
+</head>
+
+<body>
+  <%- include("../common/header", {data}) %> 
+    <%- include("../common/side_bar") %>
+    <%- include("../common/footer") %>
+      
+    <main>
+      <div class="top-bar">
+        <h2 class="title">
+          <%= categoryName ? categoryName + " 카테고리" : "전체 동호회 목록" %>
+        </h2>
+
+        <div class="type-toggle">
+          <a href="/categories?activity_type=all" class="type-btn <%= activity_type === 'all' ? 'active' : '' %>">전체</a>
+          <a href="/categories?activity_type=local" class="type-btn <%= activity_type === 'local' ? 'active' : '' %>">지역기반</a>
+          <a href="/categories?activity_type=wide" class="type-btn <%= activity_type === 'wide' ? 'active' : '' %>">광역기반</a>
+        </div>
+    
+        <form class="recommend-search-bar" method="GET" action="">
+          <input
+            type="text"
+            name="keyword"
+            placeholder="동호회 이름, 관심태그, 지역으로 검색!"
+            value="<%= keyword || '' %>"
+          />
+          <input type="hidden" name="activity_type" value="<%= activity_type %>" />
+          <button type="submit">검색</button>
+        </form>
+      </div>
+    
+      <div class="club-container">
+          <% clubs.forEach(club => { %>
+            <a href="/clubs/detail/<%= club.club_id %>" class="club-card-link">
+              <div class="club-card">
+                <img src="<%= club.image %>" alt="동호회 이미지" class="club-img">
+                <div class="club-info">
+                  <h3><%= club.name %></h3>
+                  <p class="club-desc"><%= club.introduction ? club.introduction : '소개 정보 없음' %></p>
+                  <div class="club-meta">
+                    <span class="club-badge"><%= club.club_category_name %></span>
+                    <span class="club-type-badge <%= club.activity_type %>">
+                      <%= club.activity_type === 'local' ? '지역기반' : '광역기반' %>
+                    </span>
+                    <span>·</span>
+                    <span><%= club.activity_type === 'local' ? club.local_station : (Array.isArray(club.wide_regions) ? club.wide_regions.join(', ') : '지역 정보 없음') %></span>
+                    <span>·</span>
+                    <span>멤버 <%= club.member_count || 0 %>명</span>
+                    
+                  </div>
+                  <div class="club-tags">
+                    <% if (club.Tags && club.Tags.length > 0) { %>
+                      <% club.Tags.forEach(tag => { %>
+                        <span class="club-tag">#<%= tag.tag %></span>
+                      <% }) %>
+                    <% } %>
+                  </div>
+                  
+                </div>
+              </div>
+            </a>
+          <% }) %>
+        </div>
+    
+      <% if (recommendedClubs && recommendedClubs.length > 0) { %>
+        <div class="recommend-section">
+          <h3>게스트 체험이 있는 동호회 추천</h3>
+          <% recommendedClubs.forEach(club=> { %>
+            <div class="recommend-card">
+              <img src="<%= club.image %>" alt="<%= club.name %>" />
+              <p><%= club.name %></p>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </main>
+    <script src = "../../public/script/categories/all_category.js"></script>
+</html>

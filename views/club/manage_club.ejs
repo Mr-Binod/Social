@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>동호회 수정페이지</title>
+    <link rel="stylesheet" href="/public/css/club/manage_club.css">
+</head>
+<body>
+    <%- include("../common/header", {data}) %>
+    <div id="Popupwrap">
+        <div class="Popup">           
+            <span>수정이 완료되었습니다!</span>
+            <a id="ok"><button>확인</button></a>
+        </div>
+    </div>
+    
+    <div id="Popupwraperror">
+        <div class="Popuperror">           
+            <span>수정 중 오류가 발생했습니다.</span>
+            <a id="errorOk"><button>확인</button></a>
+        </div>
+    </div>
+    
+    <div id="Popupwrap_empty">
+        <div class="Popup_empty">           
+            <span>모든 필드를 입력해주세요.</span>
+            <a id="emptyOk"><button>확인</button></a>
+        </div>
+    </div>
+    <div class = "main-content"> 
+        <div id = "club-form">
+            <div class = "form-header">
+                <h2 class = "form-title"> 동호회 수정 정보 입력</h2>
+            </div>
+            
+            <form>
+                <div class = "addFrom-group">
+                    <label class = "label required">동호회 이름</label>
+                    <input type="text" class = "form-input" id = "club_name" value="<%= club.name %>" required>
+                </div>
+                <div class = "addFrom-group">
+                    <label class = "label required">동호회 설명</label>
+                    <textarea class = "form-input-txtarea" id="club_information"><%= club.introduction %></textarea>
+                </div>
+                <div class = "addFrom-group">
+                    <label class = "label required">동호회 대표 이미지 (4:3 비율)</label>
+                    <div class = "form-container">
+                        <div class = "image-upload">
+                            <div class = "upload-icon">📷</div>
+                            <p class = "upload-info">이미지를 클릭하여 업로드하세요.(미선택시 이미지는 수정되지 않습니다.)</p>
+                            <input type="file" id = "club-image">
+                        </div>
+                    </div>
+                </div>
+                <div class = "addFrom-group">
+                    <label class="label">태그</label>
+                    <div class="add-tag">
+                        <% club.Tags.forEach(tag => { %>
+                            <span class="tag">
+                                <%= tag.tag %> <span class="tag-remove">×</span>
+                            </span>
+                            <% }) %>
+                        <input type="text" class="tag-input" id="club_tags" placeholder="태그를 입력하고 Enter를 누르세요">
+                      </div>
+                </div>
+                <div class = "addFrom-group">
+                    <label class = "label required">멤버 정원</label>
+                    <div class = "member-container">
+                        <input type="number" class="memeber-input" min="2" value="<%= club.member_limit %>">
+                        <span style="color:#666">명</span>
+                    </div>
+                    <p class = "member-noti">최소 2명 이상 입력해주세요.</p>
+                </div>
+                <div class="addForm-btn-container">
+                    <button type="button" class="btn btn-cancel" id="cancel_btn">취소</button>
+                    <button type="button" class="btn btn-ok">동호회 수정하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const tagInput = document.getElementById("club_tags");
+        const tagContainer = tagInput.parentElement;
+
+        tagContainer.querySelectorAll(".tag-remove").forEach(removeBtn => {
+            removeBtn.addEventListener("click", () => {
+            removeBtn.parentElement.remove();
+            });
+        });
+        tagInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+            e.preventDefault();
+            setTimeout(() => {
+                const tagText = tagInput.value.trim();
+                if (!tagText) return;
+
+                const existingTags = tagContainer.querySelectorAll(".tag");
+                const duplicate = Array.from(existingTags).some(tag =>
+                    tag.firstChild.textContent.trim() === tagText
+                );
+                if (duplicate) {
+                    tagInput.value = "";
+                return;
+                }
+                const tag = document.createElement("span");
+                tag.className = "tag";
+                tag.innerHTML = `${tagText} <span class="tag-remove">×</span>`;
+                tag.querySelector(".tag-remove").addEventListener("click", () => {
+                    tag.remove();
+                });
+
+                tagContainer.insertBefore(tag, tagInput);
+                tagInput.value = "";
+            }, 0);
+            }
+        });
+});
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const club_image = document.getElementById("club-image");
+        const imageUploadBox = document.querySelector(".image-upload");
+        const icon = document.querySelector(".upload-icon");
+        const upload_info = document.querySelector(".upload-info");
+    
+        imageUploadBox.addEventListener("click", () => {
+        club_image.click();
+        });
+    
+      
+      club_image.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+    
+        const reader = new FileReader();
+        reader.onload = function (event) {
+            const existingImg = imageUploadBox.querySelector("img");
+            if (existingImg) existingImg.remove();
+        
+            const previewImg = document.createElement("img");
+            previewImg.src = event.target.result;
+            previewImg.alt = "동호회 이미지 미리보기";
+            previewImg.style.width = "80%";
+            previewImg.style.aspectRatio = "4 / 3";
+            previewImg.style.objectFit = "cover";
+            previewImg.style.borderRadius = "8px";
+    
+            icon.style.display = "none";
+            upload_info.style.display = "none";
+    
+            imageUploadBox.appendChild(previewImg);
+        };
+        reader.readAsDataURL(file);
+    });
+    
+        document.querySelector(".btn-ok").addEventListener("click", async () => {
+        const name = document.getElementById("club_name").value.trim();
+        const info = document.getElementById("club_information").value.trim();
+        const limit = document.querySelector(".memeber-input").value.trim();
+        const tags = Array.from(document.querySelectorAll(".tag")).map(tag =>
+        tag.firstChild.textContent.trim()
+        );
+        const file = club_image.files[0];
+    
+        if (!name || !info || !limit) {
+            alert("모든 필드를 입력해주세요.");
+            return;
+        }
+    
+        const formData = new FormData();
+        formData.append("name", name);
+        formData.append("introduction", info);
+        formData.append("member_limit", limit);
+        formData.append("tags", JSON.stringify(tags));
+        if (file) {
+            formData.append("image", file); 
+        }
+    
+        try {
+            const res = await axios.post(`/clubs/detail/<%= club.club_id %>/manage`, formData, {
+                headers: {
+                "Content-Type": "multipart/form-data"
+            }
+        });
+    
+            if (res.data.state === 200) {
+                Popupwrap.classList.add('popup')
+                ok.onclick = (e) => {
+                    window.location.assign(`/clubs/detail/<%= club.club_id %>`);
+                }
+            } else {
+                alert(res.data.message || "수정 실패");
+            }
+        } catch (err) {
+            console.error("수정 오류", err);
+            Popupwraperror.classList.add('popup')
+        }
+      });
+    });
+
+    cancel_btn.onclick = (e) => {
+    location.href = '/clubs/detail/<%= club.club_id %>'
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+    const okButton = document.getElementById("ok");
+    if (okButton) {
+        okButton.addEventListener("click", () => {
+            document.getElementById("Popupwrap").classList.remove("popup");
+            window.location.assign(`/clubs/detail/<%= club.club_id %>`);
+        });
+    }
+
+    
+    const errorButton = document.querySelector("#Popupwraperror button");
+    if (errorButton) {
+        errorButton.addEventListener("click", () => {
+            document.getElementById("Popupwraperror").classList.remove("popup");
+        });
+    }
+
+    
+    const emptyButton = document.querySelector("#Popupwrap_empty button");
+    if (emptyButton) {
+        emptyButton.addEventListener("click", () => {
+            document.getElementById("Popupwrap_empty").classList.remove("popup");
+        });
+    }
+});
+    </script>
+    
+</html>
